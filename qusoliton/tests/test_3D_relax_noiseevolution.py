@@ -29,39 +29,50 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###################################################################################
 # -*- coding: utf-8 -*-
-# test diffraction in 3D
-""" Created 20 nov 2021
+# test relaxation in 3D and evolve with noise
+# REMARK data are created by test_3D_relax.py
+""" Created 31 dic 2021
 """
 
-from importlib import reload
-from PIL import Image
+# import utils #nopep8
+#utils.set_project_path()  # nopep8
+
 import time
-from qusoliton.sdenls import SDENLS3D as NLS
+from importlib import reload
+from termcolor import colored
+from PIL import Image
 import numpy as np
 
 
-# reload(NLS)
+from qusoliton.sdenls import SDENLS3D as NLS
+
+reload(NLS)
 # %% start timing
-startt = time.time()
+STARTT = time.time()
 
 # %% plot_level
-plot_level = 1
+PLOT_LEVEL = 2
 
-# %% define parameters as dictionary
+# save data flag
+SAVE_DATA = False
+FILENAME = './data/testdata'
 
-npoint = 16  # common point in any direction
-NLS.xmin = -10
-NLS.xmax = 10
-NLS.nx = npoint
-NLS.ymin = -10
-NLS.ymax = 10
-NLS.ny = npoint
-NLS.tmin = -10
-NLS.tmax = 10
-NLS.nt = npoint
-NLS.chi = 0.0
+# load file for initial condition
+FILENAME_RELAX = './data/relaxdata'
+
+# %% define parameters
+NPOINT = 32  # common point in any direction
+NLS.xmin = -25
+NLS.xmax = 25
+NLS.nx = NPOINT
+NLS.ymin = -25
+NLS.ymax = 25
+NLS.ny = NPOINT
+NLS.tmin = -25
+NLS.tmax = 25
+NLS.nt = NPOINT
+NLS.chi = 1.0
 NLS.nplot = 10
-NLS.nphoton = 100
 NLS.nplot = 10
 NLS.nz = 100
 NLS.zmax = 1.0
@@ -69,44 +80,63 @@ NLS.verbose_level = 2
 NLS.plot_level = 0
 NLS.iter_implicit = 0
 NLS.sigma_local = 1
-NLS.sigma_nonlocal = 0
-NLS.alphanoise = 0
+NLS.sigma_nonlocal = 1
+NLS.alphanoise = 1
+NLS.nphoton = 100
 # define main algol
 NLS.step = NLS.DRUMMOND_step
 NLS.iter_implicit = 3
-
+# parameter for relax
+NLS.relax_eig_tol = 1.0e-6
+NLS.relax_tol = 1.0e-13
+NLS.relax_alpha = 0.1
+NLS.relax_iter_linear = 1000
+NLS.relax_niter = 1000
 # init module
 NLS.init()
 
 # initial condition
-w0x = 2.0  # initial waist
-w0y = 2.0  # initial waist
-w0t = 2.0  # initial waist
-a0 = 5.0
-psi0 = a0*np.exp(-np.square(NLS.X/w0x) -
-                 np.square(NLS.Y/w0y)-np.square(NLS.T/w0t))
-phi0 = np.copy(psi0)
-NLS.psi0 = psi0
-NLS.phi0 = phi0
+W0X = 5.66  # initial waist
+W0Y = 5.66  # initial waist
+W0T = 5.66  # initial waist
+A0 = 1.0
+NLS.psi0 = A0*np.exp(-np.square(NLS.X/W0X) -
+                     np.square(NLS.Y/W0Y)-np.square(NLS.T/W0T))
+NLS.phi0 = np.copy(NLS.psi0)
 
-# plot initial conditions
+
+# reload the data and evolve to test
+print(colored('Loading and evolving ', 'blue'))
+NLS.loadall(FILENAME_RELAX+'.npz')
 
 # %% plot initial condition
-if plot_level > 0:
-    #    figure_name = './qusoliton/tests/img/initialcondition.png'
-    figure_name = './img/initialcondition.png'
-    Image.open(NLS.plot_panels(psi0, figure_name, 'initial condition')).show()
+if PLOT_LEVEL > 0:
+    FIGURE_NAME = './img/initialguess.png'
+    Image.open(NLS.plot_panels(
+        NLS.psi0, FIGURE_NAME, 'initial condition')).show()
 
-# %% evolve
-out = NLS.evolve_SDE_NLS(input)
 
-# %%
-Image.open(
-    NLS.plot_panels(np.abs(NLS.psi), './img/currentplot.png',
-                    'current status'
-                    )).show()
-Image.open(
-    NLS.plot_observables(
-        './img/observables.png',
-        'observables'
-    )).show()
+# evolve the state
+NLS.alphanoise = 1
+NLS.nphoton = 100
+NLS.nshots = 3
+NLS.filerootshot = './data/shot'
+NLS.save_all_shots = True  # save all the shots in different files
+NLS.init()  # reinit the module after changing parameters
+OUTDATA = NLS.evolve_SDE_NLS(input)
+
+if PLOT_LEVEL > 0:
+    Image.open(
+        NLS.plot_panels(np.abs(NLS.psi),
+                        './img/finalepsi.png',
+                        'final |psi| after evolution'
+                        )).show()
+    Image.open(
+        NLS.plot_observables(
+            './img/observables.png',
+            'observables'
+        )).show()
+
+# save the variables with the relaxation profile
+if SAVE_DATA:
+    NLS.saveall(FILENAME)

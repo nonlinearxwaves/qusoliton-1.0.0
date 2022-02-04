@@ -29,84 +29,56 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###################################################################################
 # -*- coding: utf-8 -*-
-# test diffraction in 3D
-""" Created 20 nov 2021
+# test load relaxation data and evolve
+""" Created 30 dic 2021
 """
-
-from importlib import reload
-from PIL import Image
-import time
+#from importlib import reload
 from qusoliton.sdenls import SDENLS3D as NLS
+import time
+from PIL import Image
 import numpy as np
+from termcolor import colored
+#import utils
+# utils.set_project_path()
+# set project path
 
-
+# need for debugging
 # reload(NLS)
+
 # %% start timing
 startt = time.time()
 
 # %% plot_level
 plot_level = 1
 
-# %% define parameters as dictionary
+# save data flag
+filename_relax = './data/relaxdata'
 
-npoint = 16  # common point in any direction
-NLS.xmin = -10
-NLS.xmax = 10
-NLS.nx = npoint
-NLS.ymin = -10
-NLS.ymax = 10
-NLS.ny = npoint
-NLS.tmin = -10
-NLS.tmax = 10
-NLS.nt = npoint
-NLS.chi = 0.0
-NLS.nplot = 10
-NLS.nphoton = 100
-NLS.nplot = 10
-NLS.nz = 100
-NLS.zmax = 1.0
-NLS.verbose_level = 2
-NLS.plot_level = 0
-NLS.iter_implicit = 0
-NLS.sigma_local = 1
-NLS.sigma_nonlocal = 0
-NLS.alphanoise = 0
-# define main algol
-NLS.step = NLS.DRUMMOND_step
-NLS.iter_implicit = 3
+# reload the data and evolve to test
+print(colored('Loading and evolving ', 'blue'))
+NLS.loadall(filename_relax+'.npz')
 
-# init module
-NLS.init()
-
-# initial condition
-w0x = 2.0  # initial waist
-w0y = 2.0  # initial waist
-w0t = 2.0  # initial waist
-a0 = 5.0
-psi0 = a0*np.exp(-np.square(NLS.X/w0x) -
-                 np.square(NLS.Y/w0y)-np.square(NLS.T/w0t))
-phi0 = np.copy(psi0)
-NLS.psi0 = psi0
-NLS.phi0 = phi0
-
-# plot initial conditions
-
-# %% plot initial condition
+# %% plot
 if plot_level > 0:
-    #    figure_name = './qusoliton/tests/img/initialcondition.png'
-    figure_name = './img/initialcondition.png'
-    Image.open(NLS.plot_panels(psi0, figure_name, 'initial condition')).show()
+    Image.open(
+        NLS.plot_panels(np.abs(NLS.psi0),
+                        './img/relaxprofile.png',
+                        'final state after relaxation'
+                        )).show()
 
-# %% evolve
-out = NLS.evolve_SDE_NLS(input)
+# evolve the state after turning on noise
+NLS.chi = 1.0
+NLS.init()  # reinit module after changing parameters
+outdata = NLS.evolve_SDE_NLS(input)
 
-# %%
-Image.open(
-    NLS.plot_panels(np.abs(NLS.psi), './img/currentplot.png',
-                    'current status'
-                    )).show()
-Image.open(
-    NLS.plot_observables(
-        './img/observables.png',
-        'observables'
-    )).show()
+if plot_level > 0:
+    Image.open(
+        NLS.plot_panels(np.abs(NLS.psi),
+                        './img/finalepsi.png',
+                        'final |psi| after evolution'
+                        )).show()
+    Image.open(
+        NLS.plot_observables(
+            './img/observables.png',
+            'observables'
+        )).show()

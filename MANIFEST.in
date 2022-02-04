@@ -1,0 +1,6 @@
+include README.md
+include LICENSE.txt
+include VERSION
+include requirements.txt
+include qusoliton.bib
+include pyproject.toml

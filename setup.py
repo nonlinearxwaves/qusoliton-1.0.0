@@ -9,6 +9,8 @@ setup(
     author_email='nonlinearxwaves@gmail.com',
     packages=['qusoliton', 'qusoliton.sdenls',
               'qusoliton.cusdenls'],  # same as name
+    #  packages=find_packages(include=['exampleproject', 'exampleproject.*'])
+
     # external packages as dependencies
-    #    install_requires=['wheel', 'bar', 'numpy', 'cupy'],
+    #   install_requires=['wheel', 'bar', 'numpy', 'termcolor', 'cupy'],
 )

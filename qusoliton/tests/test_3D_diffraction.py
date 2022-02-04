@@ -33,14 +33,17 @@
 """ Created 20 nov 2021
 """
 
-from importlib import reload
-from PIL import Image
-import time
-from qusoliton.sdenls import SDENLS3D as NLS
+
+# set project path
 import numpy as np
+import matplotlib.pyplot as plt
+from qusoliton.sdenls import SDENLS3D as NLS
+import time
+from PIL import Image
+import utils
+# utils.set_project_path()
 
 
-# reload(NLS)
 # %% start timing
 startt = time.time()
 
@@ -50,6 +53,7 @@ plot_level = 1
 # %% define parameters as dictionary
 
 npoint = 16  # common point in any direction
+NLS.zmax = 1.0
 NLS.xmin = -10
 NLS.xmax = 10
 NLS.nx = npoint
@@ -59,41 +63,42 @@ NLS.ny = npoint
 NLS.tmin = -10
 NLS.tmax = 10
 NLS.nt = npoint
-NLS.chi = 0.0
-NLS.nplot = 10
-NLS.nphoton = 100
 NLS.nplot = 10
 NLS.nz = 100
-NLS.zmax = 1.0
+NLS.chi = 0
+NLS.nphoton = 1000
+NLS.alphanoise = 0
 NLS.verbose_level = 2
 NLS.plot_level = 0
 NLS.iter_implicit = 0
 NLS.sigma_local = 1
-NLS.sigma_nonlocal = 0
-NLS.alphanoise = 0
+NLS.sigma_nonlocal = 1
 # define main algol
 NLS.step = NLS.DRUMMOND_step
-NLS.iter_implicit = 3
+
 
 # init module
 NLS.init()
+print(NLS.nx)
 
 # initial condition
 w0x = 2.0  # initial waist
 w0y = 2.0  # initial waist
 w0t = 2.0  # initial waist
-a0 = 5.0
-psi0 = a0*np.exp(-np.square(NLS.X/w0x) -
-                 np.square(NLS.Y/w0y)-np.square(NLS.T/w0t))
+psi0 = np.exp(-np.square(NLS.X/w0x)-np.square(NLS.Y/w0y)-np.square(NLS.T/w0t))
 phi0 = np.copy(psi0)
 NLS.psi0 = psi0
 NLS.phi0 = phi0
-
 # plot initial conditions
+
+# %% 2D matrix 2 plot
+#matpsi0xy = psi0[:, :, NLS.nt//2]
+#matpsi0xt = psi0[:, NLS.ny//2, :]
+#matpsi0yt = psi0[NLS.nx//2, :, :]
+
 
 # %% plot initial condition
 if plot_level > 0:
-    #    figure_name = './qusoliton/tests/img/initialcondition.png'
     figure_name = './img/initialcondition.png'
     Image.open(NLS.plot_panels(psi0, figure_name, 'initial condition')).show()
 

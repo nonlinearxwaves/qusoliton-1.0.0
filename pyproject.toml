@@ -1,0 +1,12 @@
+[build-system]
+requires = [
+    "setuptools",
+    "packaging",
+    "wheel",
+    "numpy>=1.21.4",
+    "cupy",
+    "matplotlib"
+    "termcolor"
+    "pillow"
+]
+#build-backend = "setuptools.build_meta"
