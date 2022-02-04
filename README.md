@@ -22,8 +22,13 @@ pip install qusoliton
 
 to get the minimal installation.
 
+python setup.py build
+python setup.py install
+
+
 Documentation
 -------------
+
 
 Contribute
 ----------
