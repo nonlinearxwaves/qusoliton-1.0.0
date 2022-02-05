@@ -36,12 +36,9 @@
 
 # set project path
 import numpy as np
-import matplotlib.pyplot as plt
 from qusoliton.sdenls import SDENLS3D as NLS
 import time
 from PIL import Image
-import utils
-# utils.set_project_path()
 
 
 # %% start timing
@@ -79,7 +76,6 @@ NLS.step = NLS.DRUMMOND_step
 
 # init module
 NLS.init()
-print(NLS.nx)
 
 # initial condition
 w0x = 2.0  # initial waist
