@@ -4,3 +4,5 @@ pillow
 termcolor
 matplotlib
 cupy-cuda115>=10.0
+hurry
+hurry.filesize

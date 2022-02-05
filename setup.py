@@ -21,5 +21,6 @@ setup(
 
     # external packages as dependencies
     install_requires=['wheel', 'numpy', 'termcolor',
-                      'cupy-cuda115', 'pillow', 'matplotlib'],
+                      'cupy-cuda115', 'pillow', 'matplotlib',
+                      'hurry', 'hurry.filesize', ],
 )
