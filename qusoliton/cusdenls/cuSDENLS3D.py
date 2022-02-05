@@ -1,4 +1,4 @@
-# This file is part of QuSoliton: Quantum Soliton Toolbox.
+# This file is part of QuSoliton: Quantum Soliton toolbox.
 #
 # Copyright (c) 2022 and later, Claudio Conti.
 #  All rights reserved.
@@ -29,15 +29,16 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###################################################################################
 from termcolor import colored
-import pdb
+# import pdb #debugging
 from PIL import Image
-from mpl_toolkits import mplot3d
+#from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import numpy.fft as fft
 import numpy as np
 import cupy as cp
 import time
 #import cupySDENLS.cuUTILS as cuUTILS
+from qusoliton.cusdenls import cuUTILS as cuUTILS
 
 
 """ Module for NLS stochastic in 3D

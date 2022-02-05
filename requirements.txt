@@ -1,0 +1,6 @@
+numpy
+packaging
+pillow
+termcolor
+matplotlib
+cupy-cuda115>=10.0

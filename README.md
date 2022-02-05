@@ -15,6 +15,13 @@ Support
 
 Installation
 ------------
+Cupy installation requires fine tuning w.r.t. to the install version of CUDA
+For example, with CUDA 11.5,
+```bash
+pip install cupy-cuda115
+```
+See https://docs.cupy.dev/en/stable/install.html
+
 
 ```bash
 pip install qusoliton
