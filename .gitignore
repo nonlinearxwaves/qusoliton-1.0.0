@@ -1,0 +1,15 @@
+/qusoliton/version.py
+/qusoliton.egg-info/
+/qusoliton/__init__.py~
+*.npz
+*.py~
+/qutip.bib~
+/requirements.txt~
+/setup.cfg.bkp
+/setup.cfg~
+/pyproject.toml~
+/LICENSE.txt~
+/MANIFEST.in~
+/README.md~
+/build/
+/dist/
