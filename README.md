@@ -41,10 +41,15 @@ python3 setup.py install --no-cuda
 ```
 
 
-
 Documentation
 -------------
 
+To run test files
+
+
+```bash
+python3 test_3D_diffraction.py
+```
 
 Contribute
 ----------

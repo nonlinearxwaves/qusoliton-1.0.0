@@ -1,4 +1,4 @@
-# This file is part of QuSoliton: Quantum Soliton Toolbox.
+# This file is part of QuSoliton: Quantum Soliton toolbox.
 #
 # Copyright (c) 2022 and later, Claudio Conti.
 #  All rights reserved.
