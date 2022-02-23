@@ -5,13 +5,12 @@ QuSoliton: Quantum Soliton toolbox
 
 QuSoliton is open-source software for simulating the dynamics of quantum solitons.
 QuSoliton uses Numpy, Cupy packages as numerical backend, and graphical output is provided by Matplotlib.
-QuSoliton is based on the positive P-representation and include nonlocal solitons
+QuSoliton is based on the positive P-representation and include nonlocal interactions.
 QuSoliton is freely available for use and/or modification, and it can be used on all Unix-based platforms and on Windows.
 Being free of any licensing fees, QuSoliton is ideal for exploring classical and quantum soliton dynamics for students and researchers.
 
-Support
--------
 
+QuSoliton is an outcome of the European Project PhoQus (H2020 Program grant number 820392)
 
 Installation
 ------------
@@ -46,16 +45,14 @@ Documentation
 
 To run test files
 
-
 ```bash
 python3 test_3D_diffraction.py
 ```
-
-Contribute
-----------
 
 
 Citing QuSoliton
 ------------
 
-If you use QuSoliton in your research, please cite XXX
+If you use QuSoliton in your research, please cite [arXiv:2202.10741](https://arxiv.org/abs/2202.10741)
+See the references in qusoliton.bib
+
