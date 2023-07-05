@@ -136,10 +136,10 @@ def wavenumbers(x):
 
     """
     nx = x.shape[0]
-    dx = x[1]-x[0]
+    dx = x[1] - x[0]
     kx = np.zeros(x.shape, dtype=dtreal)
-    kx = 2.0*np.pi*np.fft.fftfreq(nx, d=dx)
-    return kx, -kx**2
+    kx = 2.0 * np.pi * np.fft.fftfreq(nx, d=dx)
+    return kx, -(kx**2)
 
 
 def d_xx(x, psi):
@@ -159,7 +159,7 @@ def d_xx(x, psi):
     """
     # evaluate the wavenumbers
     kx, minus_kx_square = wavenumbers(x)
-    return fft.ifft(minus_kx_square*fft.fft(psi))
+    return fft.ifft(minus_kx_square * fft.fft(psi))
 
 
 def d_xx_fast(psi):
@@ -178,20 +178,20 @@ def d_xx_fast(psi):
 
     """
     global minus_kx_square
-    return fft.ifft(minus_kx_square*fft.fft(psi))
+    return fft.ifft(minus_kx_square * fft.fft(psi))
 
 
 def NLS_eq(x, psi, cxx=1.0, chi=1.0):
     """Return rhs of deterministic NLS."""
     psi_xx = d_xx(x, psi)
-    return 1j*cxx*psi_xx+1j*2.0*chi*psi*(np.abs(psi)**2)
+    return 1j * cxx * psi_xx + 1j * 2.0 * chi * psi * (np.abs(psi) ** 2)
 
 
 def NLS_eq_fast(psi):
     """Return rhs of deterministic NLS."""
     global chi, cxx
     psi_xx = d_xx_fast(psi)
-    return 1j*cxx*psi_xx+1j*2.0*chi*psi*(np.abs(psi)**2)
+    return 1j * cxx * psi_xx + 1j * 2.0 * chi * psi * (np.abs(psi) ** 2)
 
 
 def SDENLS_eq_fast(psi, phi):
@@ -214,10 +214,11 @@ def SDENLS_eq_fast(psi, phi):
     global twochi, cxx
     psi_xx = d_xx_fast(psi)
     phi_xx = d_xx_fast(phi)
-    tmp = psi*phi
-    return \
-        +1j*cxx*psi_xx+1j*twochi*psi*tmp, \
-        -1j*cxx*phi_xx-1j*twochi*phi*tmp
+    tmp = psi * phi
+    return (
+        +1j * cxx * psi_xx + 1j * twochi * psi * tmp,
+        -1j * cxx * phi_xx - 1j * twochi * phi * tmp,
+    )
 
 
 def power(x, psi, phi):
@@ -233,7 +234,7 @@ def power(x, psi, phi):
     The integral of |psi|**2 , if the field is normalized this is 1.0
 
     """
-    return np.trapz(np.real(psi*phi), x)
+    return np.trapz(np.real(psi * phi), x)
 
 
 def normalize(x, psi, phi):
@@ -251,7 +252,7 @@ def normalize(x, psi, phi):
 
     """
     P = power(x, psi, phi)
-    return psi/np.sqrt(P), P
+    return psi / np.sqrt(P), P
 
 
 def moments(x, psi, phi):
@@ -273,10 +274,10 @@ def moments(x, psi, phi):
     # psi_norm, P = normalize(x, psi)
     # i_norm = np.abs(psi_norm)**2
 
-    tmp = np.real(psi*phi)
+    tmp = np.real(psi * phi)
     powtmp = np.trapz(tmp, x)
-    mean_x = np.trapz(x*tmp, x)/powtmp
-    mean_x_square = np.trapz((x**2)*tmp, x)/powtmp
+    mean_x = np.trapz(x * tmp, x) / powtmp
+    mean_x_square = np.trapz((x**2) * tmp, x) / powtmp
     return powtmp, mean_x, mean_x_square
 
 
@@ -314,8 +315,8 @@ def EULER_step(psi, phi):
     """
     global dz, npsi, nphi, nx
     Fpsi, Fphi = SDENLS_eq_fast(psi, phi)
-    psi1 = psi + dz*Fpsi + npsi*psi*np.random.normal(size=nx)
-    phi1 = phi + dz*Fphi + nphi*phi*np.random.normal(size=nx)
+    psi1 = psi + dz * Fpsi + npsi * psi * np.random.normal(size=nx)
+    phi1 = phi + dz * Fphi + nphi * phi * np.random.normal(size=nx)
     return psi1, phi1
 
 
@@ -356,12 +357,12 @@ def MILSTEIN_step(psi, phi):
     Fpsi, Fphi = SDENLS_eq_fast(psi, phi)
     DW1 = np.random.normal(size=nx)
     DW2 = np.random.normal(size=nx)
-    DWpsi = npsi*DW1
-    DWphi = nphi*DW2
-    DWpsi += halfnpsisquare*(DW1**2-dzsquare)
-    DWphi += halfnphisquare*(DW2**2-dzsquare)
-    psi1 = psi + dz*Fpsi + psi*DWpsi
-    phi1 = phi + dz*Fphi + phi*DWphi
+    DWpsi = npsi * DW1
+    DWphi = nphi * DW2
+    DWpsi += halfnpsisquare * (DW1**2 - dzsquare)
+    DWphi += halfnphisquare * (DW2**2 - dzsquare)
+    psi1 = psi + dz * Fpsi + psi * DWpsi
+    phi1 = phi + dz * Fphi + phi * DWphi
     return psi1, phi1
 
 
@@ -393,12 +394,13 @@ def HEUN_step(psi, phi):
     """
     global dz, npsi, nphi
     Fpsi, Fphi = SDENLS_eq_fast(psi, phi)
-    psi1 = psi + dz*Fpsi + npsi*psi*HEUN_rand()
-    phi1 = phi + dz*Fphi + nphi*phi*HEUN_rand()
+    psi1 = psi + dz * Fpsi + npsi * psi * HEUN_rand()
+    phi1 = phi + dz * Fphi + nphi * phi * HEUN_rand()
     Gpsi, Gphi = SDENLS_eq_fast(psi1, phi1)
-    return \
-        psi + 0.5*dz*(Fpsi + Gpsi) + npsi*psi*HEUN_rand(), \
-        phi + 0.5*dz*(Fphi + Gphi) + nphi*phi*HEUN_rand()
+    return (
+        psi + 0.5 * dz * (Fpsi + Gpsi) + npsi * psi * HEUN_rand(),
+        phi + 0.5 * dz * (Fphi + Gphi) + nphi * phi * HEUN_rand(),
+    )
 
 
 def HEUN_rand():
@@ -453,21 +455,22 @@ def SRKII_step(psi, phi):
     Sphi = 0
     # build the equations
     Fpsi, Fphi = SDENLS_eq_fast(psi, phi)
-    psi1 = psi + dz*Fpsi + npsi*psi*HEUN_rand()
-    phi1 = phi + dz*Fphi + nphi*phi*HEUN_rand()
+    psi1 = psi + dz * Fpsi + npsi * psi * HEUN_rand()
+    phi1 = phi + dz * Fphi + nphi * phi * HEUN_rand()
     Gpsi, Gphi = SDENLS_eq_fast(psi1, phi1)
-    return \
-        psi + 0.5*dz*(Fpsi + Gpsi) + npsi*psi*HEUN_rand(), \
-        phi + 0.5*dz*(Fphi + Gphi) + nphi*phi*HEUN_rand()
+    return (
+        psi + 0.5 * dz * (Fpsi + Gpsi) + npsi * psi * HEUN_rand(),
+        phi + 0.5 * dz * (Fphi + Gphi) + nphi * phi * HEUN_rand(),
+    )
 
 
 def coordinates(input):
     """Return the coordinate x with a given input."""
-    xmin = input['xmin']
-    xmax = input['xmax']
-    nx = input['nx']
+    xmin = input["xmin"]
+    xmax = input["xmax"]
+    nx = input["nx"]
     x = np.linspace(xmin, xmax, num=nx, dtype=np.double)
-    dx = x[1]-x[0]
+    dx = x[1] - x[0]
     return x, dx
 
 
@@ -502,25 +505,25 @@ def evolve_SDE_NLS_Heun(input):
     global minus_kx_square, dz, npsi, nphi, nx, chi, twochi, cxx
 
     # Extract parameter out of the dictionary
-    zmax = input['zmax']
-    nx = input['nx']
-    nz = input['nz']
-    nplot = input['nplot']
-    cxx = input['cxx']
-    chi = input['chi']
-    n0 = input['n0']
-    plot_level = input['plot_level']
-    verbose_level = input['verbose_level']
+    zmax = input["zmax"]
+    nx = input["nx"]
+    nz = input["nz"]
+    nplot = input["nplot"]
+    cxx = input["cxx"]
+    chi = input["chi"]
+    n0 = input["n0"]
+    plot_level = input["plot_level"]
+    verbose_level = input["verbose_level"]
 
     # additional variables
-    twochi = 2.0*chi
+    twochi = 2.0 * chi
 
     # coordinates
     x, dx = coordinates(input)
 
     # initial condition
-    psi0 = input['psi0']
-    phi0 = input['phi0']
+    psi0 = input["psi0"]
+    phi0 = input["phi0"]
 
     #  wavenumbers
     [kx, minus_kx_square] = wavenumbers(x)
@@ -529,22 +532,22 @@ def evolve_SDE_NLS_Heun(input):
     dz = (zmax / nz) / nplot
 
     # noise coefficients
-    if input['noise']:
-        npsi = np.sqrt(1j*2.0*chi/n0)*np.sqrt(3.0*dz/dx)
-        nphi = np.sqrt(-1j*2.0*chi/n0)*np.sqrt(3.0*dz/dx)
+    if input["noise"]:
+        npsi = np.sqrt(1j * 2.0 * chi / n0) * np.sqrt(3.0 * dz / dx)
+        nphi = np.sqrt(-1j * 2.0 * chi / n0) * np.sqrt(3.0 * dz / dx)
     else:
         npsi = 0.0
         nphi = 0.0
 
     # vector of longitudinal points
     z = 0.0
-    zplot = np.zeros((nplot+1, ), dtype=np.double)
+    zplot = np.zeros((nplot + 1,), dtype=np.double)
     zplot[0] = z
 
     #  store 2D matrices
-    psi2D = np.zeros((nx, nplot+1), dtype=np.complex64)
+    psi2D = np.zeros((nx, nplot + 1), dtype=np.complex64)
     psi2D[:, 0] = psi0
-    phi2D = np.zeros((nx, nplot+1), dtype=np.complex64)
+    phi2D = np.zeros((nx, nplot + 1), dtype=np.complex64)
     phi2D[:, 0] = psi0
 
     # store observable quantities
@@ -563,42 +566,40 @@ def evolve_SDE_NLS_Heun(input):
     phi = phi0
     for iplot in range(nplot):
         for iz in range(nz):
-            psi, phi = \
-                HEUN_step(psi, phi)
-            z = z+dz
+            psi, phi = HEUN_step(psi, phi)
+            z = z + dz
         # temporary current field solution and initial one
         if verbose_level > 1:
-            print("Current plot "
-                  + repr(iplot+1)+" of "+repr(nplot))
+            print("Current plot " + repr(iplot + 1) + " of " + repr(nplot))
         if plot_level > 0:
             plt.figure(1)
-            plt.plot(x, np.abs(psi0), 'k')
+            plt.plot(x, np.abs(psi0), "k")
             plt.plot(x, np.abs(psi))
-            plt.title(repr(iplot)+' z='+repr(z))
-            plt.xlabel('x')
+            plt.title(repr(iplot) + " z=" + repr(z))
+            plt.xlabel("x")
             plt.show()
         # store
-        psi2D[:, iplot+1] = psi
-        phi2D[:, iplot+1] = phi
-        zplot[iplot+1] = z
-        powers[iplot+1], \
-            mean_xs[iplot+1], \
-            mean_square_xs[iplot+1] = moments(x, psi, phi)
+        psi2D[:, iplot + 1] = psi
+        phi2D[:, iplot + 1] = phi
+        zplot[iplot + 1] = z
+        powers[iplot + 1], mean_xs[iplot + 1], mean_square_xs[iplot + 1] = moments(
+            x, psi, phi
+        )
 
     # timing
     end_time = time.time()
-    total_time = end_time-start_time
+    total_time = end_time - start_time
 
     # store output
     out = dict()
-    out['input'] = input
-    out['zplot'] = zplot
-    out['powers'] = powers
-    out['psi2D'] = psi2D
-    out['phi2D'] = phi2D
-    out['mean_xs'] = mean_xs
-    out['mean_square_xs'] = mean_square_xs
-    out['time_seconds'] = total_time
+    out["input"] = input
+    out["zplot"] = zplot
+    out["powers"] = powers
+    out["psi2D"] = psi2D
+    out["phi2D"] = phi2D
+    out["mean_xs"] = mean_xs
+    out["mean_square_xs"] = mean_square_xs
+    out["time_seconds"] = total_time
 
     if verbose_level > 0:
         print("Run time (seconds) " + repr(total_time))
@@ -638,31 +639,29 @@ def evolve_SDE_NLS(input):
     # in input and also for the out
 
     start_time = time.time()
-    global minus_kx_square, dz, dzsquare, npsi, nphi, \
-        halfnpsisquare, halfnphisquare, \
-        nx, chi, twochi, cxx, sqrt12dz
+    global minus_kx_square, dz, dzsquare, npsi, nphi, halfnpsisquare, halfnphisquare, nx, chi, twochi, cxx, sqrt12dz
 
     # Extract parameter out of the dictionary
-    zmax = input['zmax']
-    nx = input['nx']
-    nz = input['nz']
-    nplot = input['nplot']
-    cxx = input['cxx']
-    chi = input['chi']
-    n0 = input['n0']
-    plot_level = input['plot_level']
-    verbose_level = input['verbose_level']
-    make_step = input['step']
+    zmax = input["zmax"]
+    nx = input["nx"]
+    nz = input["nz"]
+    nplot = input["nplot"]
+    cxx = input["cxx"]
+    chi = input["chi"]
+    n0 = input["n0"]
+    plot_level = input["plot_level"]
+    verbose_level = input["verbose_level"]
+    make_step = input["step"]
 
     # additional variables
-    twochi = 2.0*chi
+    twochi = 2.0 * chi
 
     # coordinates
     x, dx = coordinates(input)
 
     # initial condition
-    psi0 = input['psi0']
-    phi0 = input['phi0']
+    psi0 = input["psi0"]
+    phi0 = input["phi0"]
 
     #  wavenumbers
     [kx, minus_kx_square] = wavenumbers(x)
@@ -674,17 +673,17 @@ def evolve_SDE_NLS(input):
     # Set the scale for the noise depending on the chosen step algo
     if make_step == HEUN_step:
         # scale for HEUN algol noise
-        noise_scale = np.sqrt(3.0*dz/dx)
+        noise_scale = np.sqrt(3.0 * dz / dx)
         if verbose_level > 1:
             print("HEUN algol chosen")
     elif make_step == EULER_step:
         # scale for EULER algol noise
-        noise_scale = np.sqrt(dz/dx)
+        noise_scale = np.sqrt(dz / dx)
         if verbose_level > 1:
             print("EULER algol chosen")
     elif make_step == MILSTEIN_step:
         # scale for MILSTEIN algol noise
-        noise_scale = np.sqrt(dz/dx)
+        noise_scale = np.sqrt(dz / dx)
         if verbose_level > 1:
             print("MILSTEIN algol chosen")
     else:
@@ -692,14 +691,14 @@ def evolve_SDE_NLS(input):
         return
 
     # noise coefficients # TODO check noise coefficients!
-    if input['noise']:
-        chinoise = input['chi']
+    if input["noise"]:
+        chinoise = input["chi"]
         if "chinoise" in input:  # check if a chinoise is defined
-            chinoise = input['chinoise']
-        npsi = np.sqrt(2.0*1j*chinoise/n0)*noise_scale
-        nphi = np.sqrt(-2.0*1j*chinoise/n0)*noise_scale
-        halfnpsisquare = 0.5*(npsi**2)  # used by Milstein algols
-        halfnphisquare = 0.5*(nphi**2)  # used by Milstein algols
+            chinoise = input["chinoise"]
+        npsi = np.sqrt(2.0 * 1j * chinoise / n0) * noise_scale
+        nphi = np.sqrt(-2.0 * 1j * chinoise / n0) * noise_scale
+        halfnpsisquare = 0.5 * (npsi**2)  # used by Milstein algols
+        halfnphisquare = 0.5 * (nphi**2)  # used by Milstein algols
     else:
         npsi = 0.0
         nphi = 0.0
@@ -708,11 +707,11 @@ def evolve_SDE_NLS(input):
 
     # vector of longitudinal points
     z = 0.0
-    zplot = np.zeros((nplot+1, ), dtype=np.float64)
+    zplot = np.zeros((nplot + 1,), dtype=np.float64)
     zplot[0] = z
 
     #  store 2D matrices
-    psi2D = np.zeros((nx, nplot+1), dtype=np.complex64)
+    psi2D = np.zeros((nx, nplot + 1), dtype=np.complex64)
     psi2D[:, 0] = psi0
     phi2D = np.zeros_like(psi2D)
     phi2D[:, 0] = phi0
@@ -734,44 +733,173 @@ def evolve_SDE_NLS(input):
     phi = phi0
     for iplot in range(nplot):
         for iz in range(nz):
-            psi, phi = \
-                make_step(psi, phi)
-            z = z+dz
+            psi, phi = make_step(psi, phi)
+            z = z + dz
         # temporary current field solution and initial one
         if verbose_level > 1:
-            print("Current plot "
-                  + repr(iplot+1)+" of "+repr(nplot))
+            print("Current plot " + repr(iplot + 1) + " of " + repr(nplot))
         if plot_level > 1:
             plt.figure(1)
-            plt.plot(x, np.abs(psi0), 'k+')
+            plt.plot(x, np.abs(psi0), "k+")
             plt.plot(x, np.abs(psi))
-            plt.title(repr(iplot)+' z='+repr(z))
-            plt.xlabel('x')
+            plt.title(repr(iplot) + " z=" + repr(z))
+            plt.xlabel("x")
             figura.canvas.draw()
             figura.canvas.flush_events()
         #            plt.show()
         # store
-        psi2D[:, iplot+1] = psi
-        phi2D[:, iplot+1] = phi
-        zplot[iplot+1] = z
-        powers[iplot+1], \
-            mean_xs[iplot+1], \
-            mean_square_xs[iplot+1] = moments(x, psi, phi)
+        psi2D[:, iplot + 1] = psi
+        phi2D[:, iplot + 1] = phi
+        zplot[iplot + 1] = z
+        powers[iplot + 1], mean_xs[iplot + 1], mean_square_xs[iplot + 1] = moments(
+            x, psi, phi
+        )
 
     # timing
     end_time = time.time()
-    total_time = end_time-start_time
+    total_time = end_time - start_time
 
     # store output
     out = dict()
-    out['input'] = input
-    out['zplot'] = zplot
-    out['powers'] = powers
-    out['psi2D'] = psi2D
-    out['phi2D'] = phi2D
-    out['mean_xs'] = mean_xs
-    out['mean_square_xs'] = mean_square_xs
-    out['time_seconds'] = total_time
+    out["input"] = input
+    out["zplot"] = zplot
+    out["powers"] = powers
+    out["psi2D"] = psi2D
+    out["phi2D"] = phi2D
+    out["mean_xs"] = mean_xs
+    out["mean_square_xs"] = mean_square_xs
+    out["time_seconds"] = total_time
+
+    if verbose_level > 0:
+        print("Run time (seconds) %6.2f " % (total_time))
+
+    # Return
+    return out
+
+
+def evolve_NLS(input):
+    """Evolve deterministic NLS with split-step algol.
+
+    Parameters as input
+    -------------------
+    input is a dictionary encoding different parameters
+    zmax = np.pi
+    xmin = -30.0
+    xmax = 30.0
+    nx = 256
+    nplot = 10
+    nz = 10000
+    cxx = 1.0
+    chi = 0.0
+    plot_level=1
+
+    plot_level = 2 plot intermediate fields
+
+    Returns
+    -------
+    A dictionary out with various output
+
+    """
+    # TODO: detail the output and input in comments
+
+    # TODO: introdurre un dict di default (con config file) per i parametri
+    # in input and also for the out
+
+    start_time = time.time()
+    global minus_kx_square, dz, dzsquare, npsi, nphi, halfnpsisquare, halfnphisquare, nx, chi, twochi, cxx, sqrt12dz
+
+    # Extract parameter out of the dictionary
+    zmax = input["zmax"]
+    nx = input["nx"]
+    nz = input["nz"]
+    nplot = input["nplot"]
+    cxx = input["cxx"]
+    chi = input["chi"]
+    n0 = input["n0"]
+    plot_level = input["plot_level"]
+    verbose_level = input["verbose_level"]
+    make_step = input["step"]
+
+    # additional variables
+    twochi = 2.0 * chi
+
+    # coordinates
+    x, dx = coordinates(input)
+
+    # initial condition
+    psi0 = input["psi0"]
+
+    #  wavenumbers
+    [kx, minus_kx_square] = wavenumbers(x)
+
+    # longitudinal step (CHECK HERE)
+    dz = (zmax / nz) / nplot
+    dzsquare = dz**2  # used by Milstein algol
+
+    # vector of longitudinal points
+    z = 0.0
+    zplot = np.zeros((nplot + 1,), dtype=np.float64)
+    zplot[0] = z
+
+    #  store 2D matrices
+    psi2D = np.zeros((nx, nplot + 1), dtype=np.complex64)
+    psi2D[:, 0] = psi0
+    phi2D = np.zeros_like(psi2D)
+    phi2D[:, 0] = phi0
+
+    # store observable quantities
+    powers = np.zeros(zplot.shape, dtype=np.float64)
+    mean_xs = np.zeros_like(powers)
+    mean_square_xs = np.zeros_like(mean_xs)
+
+    # initial values for the observables
+    powers[0], mean_xs[0], mean_square_xs[0] = moments(x, psi0, np.conjugate(psi0))
+
+    # open figure
+    if plot_level > 1:
+        figura = plt.figure(1)
+        ax = figura.add_subplot(111)
+    # main loop
+    psi = psi0
+    phi = phi0
+    for iplot in range(nplot):
+        for iz in range(nz):
+            psi, phi = make_step(psi, phi)
+            z = z + dz
+        # temporary current field solution and initial one
+        if verbose_level > 1:
+            print("Current plot " + repr(iplot + 1) + " of " + repr(nplot))
+        if plot_level > 1:
+            plt.figure(1)
+            plt.plot(x, np.abs(psi0), "k+")
+            plt.plot(x, np.abs(psi))
+            plt.title(repr(iplot) + " z=" + repr(z))
+            plt.xlabel("x")
+            figura.canvas.draw()
+            figura.canvas.flush_events()
+        #            plt.show()
+        # store
+        psi2D[:, iplot + 1] = psi
+        phi2D[:, iplot + 1] = phi
+        zplot[iplot + 1] = z
+        powers[iplot + 1], mean_xs[iplot + 1], mean_square_xs[iplot + 1] = moments(
+            x, psi, phi
+        )
+
+    # timing
+    end_time = time.time()
+    total_time = end_time - start_time
+
+    # store output
+    out = dict()
+    out["input"] = input
+    out["zplot"] = zplot
+    out["powers"] = powers
+    out["psi2D"] = psi2D
+    out["phi2D"] = phi2D
+    out["mean_xs"] = mean_xs
+    out["mean_square_xs"] = mean_square_xs
+    out["time_seconds"] = total_time
 
     if verbose_level > 0:
         print("Run time (seconds) %6.2f " % (total_time))

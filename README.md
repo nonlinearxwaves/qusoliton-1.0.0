@@ -25,6 +25,17 @@ See https://docs.cupy.dev/en/stable/install.html
 pip install qusoliton
 ```
 
+to install for editing and debugging
+
+
+```bash
+python3 setup.py --no-cuda develop # faster
+# or alternative commands with pip
+pip install qusoliton --install-option="--no-cuda" -e .
+pip install qusoliton -e <local project path>
+pip install qusoliton --editable <local project path>
+```
+
 to get the minimal installation.
 
 ```bash
@@ -39,7 +50,16 @@ python3 setup.py install --no-cuda
 ```
 
 
-Documentation
+To install without cupy-cuda and develop local copy
+
+```bash
+python3 setup.py develop --no-cuda 
+```
+same without cuda
+
+
+
+DOCUMENTATION
 -------------
 
 To run test files

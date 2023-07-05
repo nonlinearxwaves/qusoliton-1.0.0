@@ -5,8 +5,8 @@ requires = [
     "wheel",
     "numpy>=1.21.4",
     "cupy",
-    "matplotlib"
-    "termcolor"
+    "matplotlib",
+    "termcolor",
     "pillow"
 ]
 #build-backend = "setuptools.build_meta"

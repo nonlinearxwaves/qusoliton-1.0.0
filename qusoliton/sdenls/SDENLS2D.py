@@ -108,7 +108,7 @@ FIVE_SIX = 0.8333333333333334
 
 
 def wavenumbers(x, y):
-    """ Return the wavenumbers for fft corresponding to x
+    """Return the wavenumbers for fft corresponding to x
 
     Parameters
     ----------------------
@@ -124,18 +124,18 @@ def wavenumbers(x, y):
 
     """
     nx = x.shape[0]
-    dx = x[1]-x[0]
+    dx = x[1] - x[0]
     kx = np.zeros(x.shape, dtype=dtreal)
-    kx = 2.0*np.pi*np.fft.fftfreq(nx, d=dx)
+    kx = 2.0 * np.pi * np.fft.fftfreq(nx, d=dx)
     ny = y.shape[0]
-    dy = y[1]-y[0]
+    dy = y[1] - y[0]
     ky = np.zeros(y.shape, dtype=dtreal)
-    ky = 2.0*np.pi*np.fft.fftfreq(ny, d=dy)
-    return kx, ky, -kx**2, -ky**2
+    ky = 2.0 * np.pi * np.fft.fftfreq(ny, d=dy)
+    return kx, ky, -(kx**2), -(ky**2)
 
 
 def peak(psi, phi):
-    """ Return power of a field as the integral of |psi|^2
+    """Return power of a field as the integral of |psi|^2
 
     Parameters
     --------------
@@ -148,12 +148,12 @@ def peak(psi, phi):
     The integral of |psi|**2 , if the field is normalized this is 1.0
 
     """
-    intensity = np.real(psi*phi)
+    intensity = np.real(psi * phi)
     return np.max(np.max(intensity))
 
 
 def power(psi, phi, dxdy=1.0):
-    """ Return power of a field as the integral of real(psi*phi)
+    """Return power of a field as the integral of real(psi*phi)
 
     Parameters
     --------------
@@ -166,12 +166,12 @@ def power(psi, phi, dxdy=1.0):
     The integral of |psi|**2 , if the field is normalized this is 1.0
 
     """
-    intensity = np.real(psi*phi)
-    return np.sum(np.sum(intensity))*dxdy
+    intensity = np.real(psi * phi)
+    return np.sum(np.sum(intensity)) * dxdy
 
 
 def normalize(psi, phi, dxdy=1.0):
-    """ Return a field normalized to have unitary power as phi*psi
+    """Return a field normalized to have unitary power as phi*psi
 
     Parameters
     --------------
@@ -185,11 +185,11 @@ def normalize(psi, phi, dxdy=1.0):
 
     """
     P = power(psi, phi, dxdy)
-    return psi/np.sqrt(P), phi/np.sqrt(P), P
+    return psi / np.sqrt(P), phi / np.sqrt(P), P
 
 
 def moments(X, Y, psi, phi, dxdy=1.0):
-    """ Return first moments wrt x of a field (psi, phi)
+    """Return first moments wrt x of a field (psi, phi)
 
     Parameters
     --------------
@@ -208,12 +208,12 @@ def moments(X, Y, psi, phi, dxdy=1.0):
 
     """
     psi_norm, phi_norm, P = normalize(psi, phi, dxdy)
-    i_norm = np.real(psi_norm*phi_norm)
-    mean_x = np.sum(X*i_norm)*dxdy
-    mean_y = np.sum(Y*i_norm)*dxdy
-    mean_x2 = np.sum((X**2)*i_norm)*dxdy
-    mean_y2 = np.sum((Y**2)*i_norm)*dxdy
-    mean_r2 = mean_x2+mean_y2
+    i_norm = np.real(psi_norm * phi_norm)
+    mean_x = np.sum(X * i_norm) * dxdy
+    mean_y = np.sum(Y * i_norm) * dxdy
+    mean_x2 = np.sum((X**2) * i_norm) * dxdy
+    mean_y2 = np.sum((Y**2) * i_norm) * dxdy
+    mean_r2 = mean_x2 + mean_y2
     return P, mean_x, mean_y, mean_x2, mean_y2, mean_r2
 
 
@@ -224,25 +224,23 @@ FIVE_SIX = 0.8333333333333334
 
 # %%
 def coordinates(input):
-    """ Return the coordinate x, y with a given input """
-    xmin = input['xmin']
-    xmax = input['xmax']
-    nx = input['nx']
+    """Return the coordinate x, y with a given input"""
+    xmin = input["xmin"]
+    xmax = input["xmax"]
+    nx = input["nx"]
     x = np.linspace(xmin, xmax, num=nx, dtype=dtreal)
-    dx = x[1]-x[0]
-    ymin = input['ymin']
-    ymax = input['ymax']
-    ny = input['ny']
+    dx = x[1] - x[0]
+    ymin = input["ymin"]
+    ymax = input["ymax"]
+    ny = input["ny"]
     y = np.linspace(ymin, ymax, num=ny, dtype=dtreal)
-    dy = y[1]-y[0]
+    dy = y[1] - y[0]
     return x, y, dx, dy
-
-
 
 
 # %% laplacian function
 def d_xx_yy(psi):
-    """ Return the second derivative of the field psi by fft
+    """Return the second derivative of the field psi by fft
 
     Parameters
     --------------
@@ -254,13 +252,15 @@ def d_xx_yy(psi):
 
     """
     global LAPL
-    return fft.ifft2(LAPL*fft.fft2(psi))
+    return fft.ifft2(LAPL * fft.fft2(psi))
+
+
 #    return fft.ifft2(LAPL*fft.fft2(psi))/(nx*ny)
 
 
 # %% main equations
 def SDENLS_eq(psi, phi):
-    """ Return the deterministic rhs of SDE NLS
+    """Return the deterministic rhs of SDE NLS
 
     Parameters
     --------------
@@ -279,9 +279,9 @@ def SDENLS_eq(psi, phi):
     global chi
     psi_xx_yy = d_xx_yy(psi)
     phi_xx_yy = d_xx_yy(phi)
-    tmp = psi*phi
-    psi_ = +1j*psi_xx_yy+1j*2.0*chi*psi*tmp
-    phi_ = -1j*phi_xx_yy-1j*2.0*chi*phi*tmp
+    tmp = psi * phi
+    psi_ = +1j * psi_xx_yy + 1j * 2.0 * chi * psi * tmp
+    phi_ = -1j * phi_xx_yy - 1j * 2.0 * chi * phi * tmp
     return psi_, phi_
 
 
@@ -310,11 +310,11 @@ def HEUN_step(psi, phi):
     """
     global dz, halfdz, npsi, nphi
     Fpsi, Fphi = SDENLS_eq(psi, phi)
-    psi1 = psi + dz*Fpsi + npsi*psi*HEUN_rand()
-    phi1 = phi + dz*Fphi + nphi*phi*HEUN_rand()
+    psi1 = psi + dz * Fpsi + npsi * psi * HEUN_rand()
+    phi1 = phi + dz * Fphi + nphi * phi * HEUN_rand()
     Gpsi, Gphi = SDENLS_eq(psi1, phi1)
-    psi_ = psi + halfdz*(Fpsi + Gpsi) + npsi*psi*HEUN_rand()
-    phi_ = phi + halfdz*(Fphi + Gphi) + nphi*phi*HEUN_rand()
+    psi_ = psi + halfdz * (Fpsi + Gpsi) + npsi * psi * HEUN_rand()
+    phi_ = phi + halfdz * (Fphi + Gphi) + nphi * phi * HEUN_rand()
     return psi_, phi_
 
 
@@ -361,8 +361,8 @@ def EULER_step(psi, phi):
     """
     global dz, npsi, nphi, nx, ny
     Fpsi, Fphi = SDENLS_eq(psi, phi)
-    psi1 = psi + dz*Fpsi + npsi*psi*np.random.normal(size=(ny, nx))
-    phi1 = phi + dz*Fphi + nphi*phi*np.random.normal(size=(ny, nx))
+    psi1 = psi + dz * Fpsi + npsi * psi * np.random.normal(size=(ny, nx))
+    phi1 = phi + dz * Fphi + nphi * phi * np.random.normal(size=(ny, nx))
     return psi1, phi1
 
 
@@ -393,16 +393,16 @@ def MILSTEIN_step(psi, phi):
     Fpsi, Fphi = SDENLS_eq(psi, phi)
     DW1 = np.random.normal(size=(ny, nx))
     DW2 = np.random.normal(size=(ny, nx))
-    DWpsi = npsi*DW1
-    DWphi = nphi*DW2
-    DWpsi += halfnpsisquare*(DW1**2-dzsquare)
-    DWphi += halfnphisquare*(DW2**2-dzsquare)
-    psi1 = psi + dz*Fpsi + psi*DWpsi
-    phi1 = phi + dz*Fphi + phi*DWphi
+    DWpsi = npsi * DW1
+    DWphi = nphi * DW2
+    DWpsi += halfnpsisquare * (DW1**2 - dzsquare)
+    DWphi += halfnphisquare * (DW2**2 - dzsquare)
+    psi1 = psi + dz * Fpsi + psi * DWpsi
+    phi1 = phi + dz * Fphi + phi * DWphi
     return psi1, phi1
 
 
-# %% main evolution routine
+# %% main evolution routine with SDE
 def evolve_SDE_NLS(input):
     """Evolve according to the NLS with an arbitrary algol.
 
@@ -438,44 +438,39 @@ def evolve_SDE_NLS(input):
     # in input and also for the out
 
     start_time = time.time()
-    global LAPL, \
-        dz, dzsquare, \
-        npsi, nphi, \
-        halfnpsisquare, halfnphisquare, \
-        nx, ny, chi, twochi, cxx, cyy
+    global LAPL, dz, dzsquare, npsi, nphi, halfnpsisquare, halfnphisquare, nx, ny, chi, twochi, cxx, cyy
 
     # Extract parameter out of the dictionary
-    zmax = input['zmax']
-    nx = input['nx']
-    ny = input['ny']
-    nz = input['nz']
-    nplot = input['nplot']
-    cxx = input['cxx']
-    cyy = input['cyy']
-    chi = input['chi']
-    n0 = input['n0']
-    plot_level = input['plot_level']
-    verbose_level = input['verbose_level']
-    make_step = input['step']
+    zmax = input["zmax"]
+    nx = input["nx"]
+    ny = input["ny"]
+    nz = input["nz"]
+    nplot = input["nplot"]
+    cxx = input["cxx"]
+    cyy = input["cyy"]
+    chi = input["chi"]
+    n0 = input["n0"]
+    plot_level = input["plot_level"]
+    verbose_level = input["verbose_level"]
+    make_step = input["step"]
 
     # additional variables
-    twochi = 2.0*chi
+    twochi = 2.0 * chi
 
     # coordinates
     x, y, dx, dy = coordinates(input)
     X, Y = np.meshgrid(x, y)
 
     # initial condition
-    psi0 = input['psi0']
-    phi0 = input['phi0']
+    psi0 = input["psi0"]
+    phi0 = input["phi0"]
 
     #  wavenumbers
-    kx, ky, \
-        minus_kx_square, minus_ky_square = wavenumbers(x, y)
+    kx, ky, minus_kx_square, minus_ky_square = wavenumbers(x, y)
     MKX2, MKY2 = np.meshgrid(minus_kx_square, minus_ky_square)
 
     # laplacian
-    LAPL = cxx*MKX2+cyy*MKY2
+    LAPL = cxx * MKX2 + cyy * MKY2
 
     # longitudinal step (CHECK HERE)
     dz = (zmax / nz) / nplot
@@ -484,34 +479,35 @@ def evolve_SDE_NLS(input):
     # Set the scale for the noise depending on the chosen step algo
     if make_step == HEUN_step:
         # scale for HEUN algol noise
-        noise_scale = np.sqrt(3.0*dz/(dx*dy))
+        noise_scale = np.sqrt(3.0 * dz / (dx * dy))
         if verbose_level > 1:
             print("HEUN algol chosen")
     elif make_step == EULER_step:
         # scale for EULER algol noise
-        noise_scale = np.sqrt(dz/(dx*dy))
+        noise_scale = np.sqrt(dz / (dx * dy))
         if verbose_level > 1:
             print("EULER algol chosen")
     elif make_step == MILSTEIN_step:
         # scale for MILSTEIN algol noise
-        noise_scale = np.sqrt(dz/(dx*dy))
+        noise_scale = np.sqrt(dz / (dx * dy))
         if verbose_level > 1:
             print("MILSTEIN algol chosen")
     else:
         print("ERROR no make step function specified")
         return
+
     if verbose_level > 1:
-        print("Close windows to continue executions")
+        print("Close ongoing windows to continue executions")
 
     # noise coefficients
-    if input['noise']:
-        chinoise = input['chi']
+    if input["noise"]:
+        chinoise = input["chi"]
         if "chinoise" in input:  # check if a chinoise is defined
-            chinoise = input['chinoise']
-        npsi = np.sqrt(1j*2.0*chinoise/n0)*noise_scale
-        nphi = np.sqrt(-1j*2.0*chinoise/n0)*noise_scale
-        halfnpsisquare = 0.5*(npsi**2)  # used by Milstein algols
-        halfnphisquare = 0.5*(nphi**2)  # used by Milstein algols
+            chinoise = input["chinoise"]
+        npsi = np.sqrt(1j * 2.0 * chinoise / n0) * noise_scale
+        nphi = np.sqrt(-1j * 2.0 * chinoise / n0) * noise_scale
+        halfnpsisquare = 0.5 * (npsi**2)  # used by Milstein algols
+        halfnphisquare = 0.5 * (nphi**2)  # used by Milstein algols
     else:
         npsi = 0.0
         nphi = 0.0
@@ -520,13 +516,13 @@ def evolve_SDE_NLS(input):
 
     # vector of longitudinal points
     z = 0.0
-    zplot = np.zeros((nplot+1, ), dtype=np.double)
+    zplot = np.zeros((nplot + 1,), dtype=np.double)
     zplot[0] = z
 
     #  store 2D matrices
-    psi3D = np.zeros((ny, nx, nplot+1), dtype=np.complex64)
+    psi3D = np.zeros((ny, nx, nplot + 1), dtype=np.complex64)
     psi3D[:, :, 0] = psi0
-    phi3D = np.zeros((ny, nx, nplot+1), dtype=np.complex64)
+    phi3D = np.zeros((ny, nx, nplot + 1), dtype=np.complex64)
     phi3D[:, :, 0] = phi0
 
     # store observable quantities
@@ -540,9 +536,14 @@ def evolve_SDE_NLS(input):
 
     # initial values for the observables
     peaks[0] = peak(psi0, phi0)
-    powers[0], mean_xs[0], mean_ys[0], \
-        mean_square_xs[0], mean_square_ys[0], \
-        mean_square_rs[0] = moments(X, Y, psi0, phi0)
+    (
+        powers[0],
+        mean_xs[0],
+        mean_ys[0],
+        mean_square_xs[0],
+        mean_square_ys[0],
+        mean_square_rs[0],
+    ) = moments(X, Y, psi0, phi0)
 
     # open figure
     if plot_level > 1:
@@ -552,51 +553,54 @@ def evolve_SDE_NLS(input):
     phi = phi0
     for iplot in range(nplot):
         for iz in range(nz):
-            psi, phi = \
-                make_step(psi, phi)
-            z = z+dz
+            psi, phi = make_step(psi, phi)
+            z = z + dz
         # temporary current field solution and initial one
         if verbose_level > 1:
-            print("Current plot %d of %d, power = %5.2f "
-                  % (iplot+1, nplot, powers[iplot]))
+            print(
+                "Current plot %d of %d, power = %5.2f "
+                % (iplot + 1, nplot, powers[iplot])
+            )
         if plot_level > 1:
             plt.figure(1)
             # plt.plot(x, np.abs(psi0), 'k+')
             plt.pcolor(Y, X, np.abs(psi))
-            plt.title(repr(iplot)+' z='+repr(z))
-            plt.xlabel('y')
-            plt.ylabel('x')
+            plt.title(repr(iplot) + " z=" + repr(z))
+            plt.xlabel("y")
+            plt.ylabel("x")
             plt.show()
         # store
-        psi3D[:, :, iplot+1] = psi
-        phi3D[:, :, iplot+1] = phi
-        zplot[iplot+1] = z
-        powers[iplot+1], \
-            mean_xs[iplot+1], \
-            mean_ys[iplot+1], \
-            mean_square_xs[iplot+1], \
-            mean_square_ys[iplot+1], \
-            mean_square_rs[iplot+1] = moments(X, Y, psi, phi)
-        peaks[iplot+1] = peak(psi, phi)
+        psi3D[:, :, iplot + 1] = psi
+        phi3D[:, :, iplot + 1] = phi
+        zplot[iplot + 1] = z
+        (
+            powers[iplot + 1],
+            mean_xs[iplot + 1],
+            mean_ys[iplot + 1],
+            mean_square_xs[iplot + 1],
+            mean_square_ys[iplot + 1],
+            mean_square_rs[iplot + 1],
+        ) = moments(X, Y, psi, phi)
+        peaks[iplot + 1] = peak(psi, phi)
 
     # timing
     end_time = time.time()
-    total_time = end_time-start_time
+    total_time = end_time - start_time
 
     # store output (improve the output for 3D or similar)
     out = dict()
-    out['input'] = input
-    out['zplot'] = zplot
-    out['powers'] = powers
-    out['psi3D'] = psi3D
-    out['phi3D'] = phi3D
-    out['peaks'] = peaks
-    out['mean_xs'] = mean_xs
-    out['mean_ys'] = mean_ys
-    out['mean_square_xs'] = mean_square_xs
-    out['mean_square_ys'] = mean_square_ys
-    out['mean_square_rs'] = mean_square_rs
-    out['time_seconds'] = total_time
+    out["input"] = input
+    out["zplot"] = zplot
+    out["powers"] = powers
+    out["psi3D"] = psi3D
+    out["phi3D"] = phi3D
+    out["peaks"] = peaks
+    out["mean_xs"] = mean_xs
+    out["mean_ys"] = mean_ys
+    out["mean_square_xs"] = mean_square_xs
+    out["mean_square_ys"] = mean_square_ys
+    out["mean_square_rs"] = mean_square_rs
+    out["time_seconds"] = total_time
 
     if verbose_level > 0:
         print("Run time (seconds) %6.2f " % (total_time))
