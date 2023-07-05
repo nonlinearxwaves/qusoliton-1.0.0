@@ -9,7 +9,6 @@ QuSoliton is based on the positive P-representation and include nonlocal interac
 QuSoliton is freely available for use and/or modification, and it can be used on all Unix-based platforms and on Windows.
 Being free of any licensing fees, QuSoliton is ideal for exploring classical and quantum soliton dynamics for students and researchers.
 
-
 QuSoliton is an outcome of the European Project PhoQus (H2020 Program grant number 820392)
 
 Installation
@@ -17,7 +16,7 @@ Installation
 Cupy installation requires fine tuning w.r.t. to the install version of CUDA
 For example, with CUDA 11.5,
 ```bash
-pip install cupy-cuda115
+pip install cupy-cuda115yy
 ```
 See https://docs.cupy.dev/en/stable/install.html
 
