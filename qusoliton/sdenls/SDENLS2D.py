@@ -487,7 +487,6 @@ def evolve_SDE_NLS(input):
         noise_scale = np.sqrt(3.0*dz/(dx*dy))
         if verbose_level > 1:
             print("HEUN algol chosen")
-            print("Close windows to continue executions")
     elif make_step == EULER_step:
         # scale for EULER algol noise
         noise_scale = np.sqrt(dz/(dx*dy))
@@ -501,6 +500,8 @@ def evolve_SDE_NLS(input):
     else:
         print("ERROR no make step function specified")
         return
+    if verbose_level > 1:
+        print("Close windows to continue executions")
 
     # noise coefficients
     if input['noise']:
