@@ -823,7 +823,6 @@ def evolve_NLS(input):
     nplot = input["nplot"]
     cxx = input["cxx"]
     chi = input["chi"]
-    n0 = input["n0"]
     plot_level = input["plot_level"]
     verbose_level = input["verbose_level"]
 
@@ -843,10 +842,15 @@ def evolve_NLS(input):
     # longitudinal step (CHECK HERE)
     dz = (zmax / nz) / nplot
 
+    print("DEBUG dz=" + repr(dz) + " " + " 1j=" + repr(1j))
     # vector of longitudinal points
     z = 0.0
     zplot = np.zeros((nplot + 1,), dtype=dtreal)
     zplot[0] = z
+
+    # store 1D vectors
+    psi = np.zeros_like(psi0)
+    I1 = np.zeros_like(psi0)
 
     #  store 2D matrices
     psi2D = np.zeros((nx, nplot + 1), dtype=dtcomplex)
@@ -858,7 +862,7 @@ def evolve_NLS(input):
     mean_square_xs = np.zeros_like(mean_xs)
 
     # transfer function for the convolution
-    conv = np.zeros(psi0.shape, dtype=np.complex64)
+    conv = np.zeros(psi0.shape, dtype=dtcomplex)
     conv = 1j * minus_kx_square * 0.5 * dz
     conv = np.exp(conv)
 
@@ -873,7 +877,14 @@ def evolve_NLS(input):
     psi = psi0
     for iplot in range(nplot):
         for iz in range(nz):
-            psi = NLS_step(psi)
+            # half dispersive step
+            psi = fft.ifft(fft.fft(psi) * conv)
+            # full nonlinear step
+            I1 = np.abs(psi) ** 2
+            psi = psi * np.exp(twochi1j * I1 * dz)
+            # half dispersive
+            psi = fft.ifft(fft.fft(psi) * conv)
+            # psi = NLS_step(psi)
             z = z + dz
         # temporary current field solution and initial one
         if verbose_level > 1:

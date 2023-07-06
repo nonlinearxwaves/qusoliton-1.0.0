@@ -48,7 +48,7 @@ w = np.sqrt[1+16 z**2]
 and the std = w/2.0
 
 @author: claudio
-@version: 06 february 2022
+@version: 06 july 2023
 """
 
 # TODO: test the diffraction with a gaussian beam
@@ -70,20 +70,15 @@ input["nplot"] = 10
 input["nz"] = 100
 input["cxx"] = 1.0
 input["chi"] = 0.0
-input["n0"] = 1000  # number of photons
-input["noise"] = False  # coefficient to switch noise, if false no noise
 input["plot_level"] = 0
 input["verbose_level"] = 2
-input["step"] = NLS.HEUN_step
 # %% coordinates
 x, _ = NLS.coordinates(input)
 # %% initial condition
 psi0 = np.exp(-np.square(x))
-phi0 = psi0
 input["psi0"] = psi0
-input["phi0"] = phi0
 # %% evolve
-out = NLS.evolve_SDE_NLS(input)
+out = NLS.evolve_NLS(input)
 # %% extract data from sims
 zplot = out["zplot"]
 psi2D = out["psi2D"]
