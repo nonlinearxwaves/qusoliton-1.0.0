@@ -36,16 +36,14 @@ Solve the stochastic NLS by the HEUN method
 
 The equation is written as
 
-    +1j psi_t + c_xx psi_xx + 1j 2.0 chi psi^2 phi + npsi psi rand_psi
-    -1j phi_t + c_xx phi_xx - 1j 2.0 chi psi phi^2 + nphi phi rand_phi
+    +1j psi_t + c_xx psi_xx + 1j 2.0 chi |psi|^2 psi
 
-TEST 1, test the diffraction do a gaussian beam with parameters
-chi = 0
-cxx = 1
-input beam is exp( -x**2  )
-the expected trend for the waist
-w = np.sqrt[1+16 z**2]
-and the std = w/2.0
+TEST 1D nonlinear
+Test soliton propagation with initial condition N sech(x)
+which is periodical with period pi/2 in t pi/2
+with the following coefficients
+chi = 0.5
+cxx = 0.5
 
 @author: claudio
 @version: 06 july 2023
@@ -63,19 +61,19 @@ startt = time.time()
 # %% parameters (as a dictionary)
 input = dict()
 input["zmax"] = np.pi
-input["xmin"] = -30.0
-input["xmax"] = 30.0
+input["xmin"] = -5.0
+input["xmax"] = 5.0
 input["nx"] = 256
-input["nplot"] = 10
+input["nplot"] = 50
 input["nz"] = 100
-input["cxx"] = 1.0
-input["chi"] = 0.0
+input["cxx"] = 0.5
+input["chi"] = 0.5
 input["plot_level"] = 0
 input["verbose_level"] = 2
 # %% coordinates
 x, _ = NLS.coordinates(input)
 # %% initial condition
-psi0 = np.exp(-np.square(x))
+psi0 = 3 / np.cosh(x)
 input["psi0"] = psi0
 # %% evolve
 out = NLS.evolve_NLS(input)

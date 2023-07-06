@@ -863,7 +863,7 @@ def evolve_NLS(input):
 
     # transfer function for the convolution
     conv = np.zeros(psi0.shape, dtype=dtcomplex)
-    conv = 1j * minus_kx_square * 0.5 * dz
+    conv = 1j * cxx * minus_kx_square * 0.5 * dz
     conv = np.exp(conv)
 
     # initial values for the observables
