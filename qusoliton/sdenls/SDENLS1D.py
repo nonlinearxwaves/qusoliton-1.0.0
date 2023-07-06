@@ -106,9 +106,11 @@ dtcomplex = np.complex64  # complex datatype
 # global variables
 nx = 2
 minus_kx_square = np.zeros((nx,))
+conv = np.zeros((nx,), dtype=dtcomplex)
 cxx = 1.0
 chi = 1.0
 twochi = 2.0
+twochi1j = 1j
 dz = 0.1
 dzsquare = 0.01
 npsi = 0.0
@@ -780,6 +782,12 @@ def evolve_SDE_NLS(input):
 def evolve_NLS(input):
     """Evolve deterministic NLS with split-step algol.
 
+
+    +1j psi_t + c_xx psi_xx + 2.0 chi psi^2 conjugate(psi) = 0
+
+    psi_t = 1j*c_xx*psi_xx+1j*2.0*chi*psi^2*conj(psi)
+
+
     Parameters as input
     -------------------
     input is a dictionary encoding different parameters
@@ -806,7 +814,7 @@ def evolve_NLS(input):
     # in input and also for the out
 
     start_time = time.time()
-    global minus_kx_square, dz, dzsquare, npsi, nphi, halfnpsisquare, halfnphisquare, nx, chi, twochi, cxx, sqrt12dz
+    global twochi, twochi1j, conv
 
     # Extract parameter out of the dictionary
     zmax = input["zmax"]
@@ -818,10 +826,10 @@ def evolve_NLS(input):
     n0 = input["n0"]
     plot_level = input["plot_level"]
     verbose_level = input["verbose_level"]
-    make_step = input["step"]
 
     # additional variables
     twochi = 2.0 * chi
+    twochi1j = twochi * 1j
 
     # coordinates
     x, dx = coordinates(input)
@@ -834,23 +842,25 @@ def evolve_NLS(input):
 
     # longitudinal step (CHECK HERE)
     dz = (zmax / nz) / nplot
-    dzsquare = dz**2  # used by Milstein algol
 
     # vector of longitudinal points
     z = 0.0
-    zplot = np.zeros((nplot + 1,), dtype=np.float64)
+    zplot = np.zeros((nplot + 1,), dtype=dtreal)
     zplot[0] = z
 
     #  store 2D matrices
-    psi2D = np.zeros((nx, nplot + 1), dtype=np.complex64)
+    psi2D = np.zeros((nx, nplot + 1), dtype=dtcomplex)
     psi2D[:, 0] = psi0
-    phi2D = np.zeros_like(psi2D)
-    phi2D[:, 0] = phi0
 
     # store observable quantities
     powers = np.zeros(zplot.shape, dtype=np.float64)
     mean_xs = np.zeros_like(powers)
     mean_square_xs = np.zeros_like(mean_xs)
+
+    # transfer function for the convolution
+    conv = np.zeros(psi0.shape, dtype=np.complex64)
+    conv = 1j * minus_kx_square * 0.5 * dz
+    conv = np.exp(conv)
 
     # initial values for the observables
     powers[0], mean_xs[0], mean_square_xs[0] = moments(x, psi0, np.conjugate(psi0))
@@ -861,10 +871,9 @@ def evolve_NLS(input):
         ax = figura.add_subplot(111)
     # main loop
     psi = psi0
-    phi = phi0
     for iplot in range(nplot):
         for iz in range(nz):
-            psi, phi = make_step(psi, phi)
+            psi = NLS_step(psi)
             z = z + dz
         # temporary current field solution and initial one
         if verbose_level > 1:
@@ -880,10 +889,9 @@ def evolve_NLS(input):
         #            plt.show()
         # store
         psi2D[:, iplot + 1] = psi
-        phi2D[:, iplot + 1] = phi
         zplot[iplot + 1] = z
         powers[iplot + 1], mean_xs[iplot + 1], mean_square_xs[iplot + 1] = moments(
-            x, psi, phi
+            x, psi, np.conjugate(psi)
         )
 
     # timing
@@ -896,7 +904,6 @@ def evolve_NLS(input):
     out["zplot"] = zplot
     out["powers"] = powers
     out["psi2D"] = psi2D
-    out["phi2D"] = phi2D
     out["mean_xs"] = mean_xs
     out["mean_square_xs"] = mean_square_xs
     out["time_seconds"] = total_time
@@ -906,3 +913,36 @@ def evolve_NLS(input):
 
     # Return
     return out
+
+
+def NLS_step(psi):
+    """Return the deterministic rhs of NLS by split method.
+
+    Parameters
+    ----------
+    psi : array of complex64 for the field psi
+
+    Returns
+    -------
+    Two next update of the equations with the model
+
+    +1j psi_t + c_xx psi_xx + 1j 2.0 chi phi^2 conjugate(phi)
+
+    Notes
+    -----
+    This tends to be unstable
+    Can speed up by removing the random normal and using a uniform random
+
+
+    """
+    global dz, conv, twochi1j
+
+    # half dispersive step
+    psi = psi * conv
+    # full nonlinear step
+    I1 = np.abs(psi) ** 2
+    psi = psi * np.exp(twochi1j * I1 * dz)
+    # half dispersive
+    psi = psi * conv
+
+    return psi
