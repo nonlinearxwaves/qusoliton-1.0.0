@@ -924,36 +924,3 @@ def evolve_NLS(input):
 
     # Return
     return out
-
-
-def NLS_step(psi):
-    """Return the deterministic rhs of NLS by split method.
-
-    Parameters
-    ----------
-    psi : array of complex64 for the field psi
-
-    Returns
-    -------
-    Two next update of the equations with the model
-
-    +1j psi_t + c_xx psi_xx + 1j 2.0 chi phi^2 conjugate(phi)
-
-    Notes
-    -----
-    This tends to be unstable
-    Can speed up by removing the random normal and using a uniform random
-
-
-    """
-    global dz, conv, twochi1j
-
-    # half dispersive step
-    psi = psi * conv
-    # full nonlinear step
-    I1 = np.abs(psi) ** 2
-    psi = psi * np.exp(twochi1j * I1 * dz)
-    # half dispersive
-    psi = psi * conv
-
-    return psi
