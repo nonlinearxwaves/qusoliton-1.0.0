@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+"""
+Solve the stochastic NLS by the EULER method, test diffraction, no noise, 2D
+
+Created on Thu Dec 26 18:22:38 2019.
+
+The equation is written as
+
++1j psi_t + c_xx psi_xx + c_yy psi_yy + 1j 2.0 chi psi^2 phi + npsi psi rand_psi
+-1j phi_t + c_xx phi_xx + c_yy phi_yy- 1j 2.0 chi psi phi^2 + nphi phi rand_phi
+
+TEST 1, test the diffraction do a gaussian beam with parameters
+chi = 0
+cxx = 0.75
+cyy = 1.5
+input beam is exp( -(x/w0x)**2 -(y/w0y)**2  )
+the expected trend for the waist
+w = np.sqrt[1+16 z**2]   |  # TODO check this formula
+and the std = w/2.0
+
+@author: claudio
+@version: 8 march 2020
+"""
+
+# TODO: test the diffraction with a gaussian beam
+import time
+import matplotlib.pyplot as plt
+import numpy as np
+import utils
+utils.set_project_path()
+
+
+# autopep8: off
+# disable python autoformatting
+import cupySDENLS.cuSDENLS2D as NLS
+# autopep8: on
+
+# %% timing
+startt = time.time()
+# %% parameters (as a dictionary)
+input = dict()
+input['zmax'] = 1
+input['xmin'] = -22.0
+input['xmax'] = 27.0
+input['ymin'] = -18.0
+input['ymax'] = 20.0
+input['nx'] = 256
+input['ny'] = 256
+input['nplot'] = 10
+input['nz'] = 2000
+input['cxx'] = 0.75
+input['cyy'] = 1.5
+input['chi'] = 0.0
+input['n0'] = 1000  # number of photons
+input['noise'] = False  # coefficient to switch noise, if false no noise
+input['plot_level'] = 2
+input['verbose_level'] = 2
+input['step'] = NLS.MILSTEIN_step
+# %% coordinates
+x, y, _, _ = NLS.coordinates(input)
+X, Y = np.meshgrid(x, y)
+# %% initial condition
+w0x = 2.0  # waist in the x direction
+w0y = 1.7  # waist in the y direction
+psi0 = np.exp(-np.square(X/w0x)-np.square(Y/w0y))
+phi0 = np.copy(psi0)
+input['psi0'] = psi0
+input['phi0'] = phi0
+# %% plot initial condiiton
+# %% evolve
+out = NLS.evolve_SDE_NLS(input)
+# %% extract data from sims
+zplot = out['zplot']
+# psi2D = out['psi2D']
+powers = out['powers']
+mean_xs = out['mean_xs']
+mean_ys = out['mean_ys']
+mean_square_xs = out['mean_square_xs']
+mean_square_ys = out['mean_square_ys']
+mean_square_rs = out['mean_square_rs']
+# %%
+fig2D = plt.figure()
+# plt.pcolormesh(zplot, x, np.abs(psi2D))
+plt.ylabel('x')
+plt.xlabel('z')
+# %% plot observables
+plt.figure()
+plt.plot(zplot, powers.get())
+plt.ylabel('power')
+plt.xlabel('z')
+plt.figure()
+plt.plot(zplot, mean_xs.get())
+plt.ylabel('<x>')
+plt.figure()
+plt.plot(zplot, mean_ys.get())
+plt.ylabel('<y>')
+plt.xlabel('z')
+plt.figure()
+# %% plot the std and compare with exact solution
+cxx = input['cxx']
+cyy = input['cyy']
+# exact solution for unitary waist Gaussian
+std_exx = (w0x/2.0)*np.sqrt(1.0+16.0*cxx*cxx*(zplot/w0x**2)**2)
+std_eyy = (w0y/2.0)*np.sqrt(1.0+16.0*cyy*cyy*(zplot/w0y**2)**2)
+std_e = np.sqrt(std_exx**2+std_eyy**2)
+plt.figure()
+plt.plot(zplot, np.sqrt(mean_square_xs.get()), 'k')
+plt.plot(zplot, np.sqrt(mean_square_ys.get()), 'r')
+plt.plot(zplot, np.sqrt(mean_square_rs.get()), 'b')
+plt.plot(zplot, std_exx, 'kx')
+plt.plot(zplot, std_eyy, 'rx')
+plt.plot(zplot, std_e, 'bx')
+plt.ylabel('sqrt(<x**2>)')
+plt.xlabel('z')
+plt.show()
+# %% timing
+endt = time.time()
+if input['verbose_level'] > 0:
+    print('Total time (s) '+repr(endt-startt))
