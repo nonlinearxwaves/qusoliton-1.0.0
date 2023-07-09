@@ -842,7 +842,6 @@ def evolve_NLS(input):
     # longitudinal step (CHECK HERE)
     dz = (zmax / nz) / nplot
 
-    print("DEBUG dz=" + repr(dz) + " " + " 1j=" + repr(1j))
     # vector of longitudinal points
     z = 0.0
     zplot = np.zeros((nplot + 1,), dtype=dtreal)

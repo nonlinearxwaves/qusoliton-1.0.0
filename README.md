@@ -51,12 +51,25 @@ python3 setup.py install --no-cuda
 
 
 To install without cupy-cuda and develop local copy
-
+ 
 ```bash
 python3 setup.py develop --no-cuda 
 ```
 same without cuda
 
+CREATION OF PACKAGE in PyPi
+---------------------------
+The package in PyPi is created by running 
+in the folder qusoliton-1.0.0 parte of the folder qusoliton
+
+```bash
+python3 -m build --skip-dependency-check
+```
+
+by following the tutorial
+https://packaging.python.org/en/latest/tutorials/packaging-projects/
+
+NB: the package is not available yet I have some issue with cuda (update 9 july 2023)
 
 
 DOCUMENTATION
