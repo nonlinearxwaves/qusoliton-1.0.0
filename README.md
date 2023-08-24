@@ -11,14 +11,8 @@ Being free of any licensing fees, QuSoliton is ideal for exploring classical and
 
 QuSoliton is an outcome of the European Project PhoQus (H2020 Program grant number 820392)
 
-Installation
-------------
-Cupy installation requires fine tuning w.r.t. to the install version of CUDA
-For example, with CUDA 11.5,
-```bash
-pip install cupy-cuda115yy
-```
-See https://docs.cupy.dev/en/stable/install.html
+Local Installation
+------------------
 
 
 ```bash
@@ -27,36 +21,28 @@ pip install qusoliton
 
 to install for editing and debugging
 
-
+clone the project and run in the local folder
 ```bash
-python3 setup.py --no-cuda develop # faster
-# or alternative commands with pip
-pip install qusoliton --install-option="--no-cuda" -e .
-pip install qusoliton -e <local project path>
-pip install qusoliton --editable <local project path>
-```
-
-to get the minimal installation.
-
-```bash
-python3 setup.py build #optional
-python3 setup.py install
-```
-
-To install without cupy-cuda
-
-```bash
-python3 setup.py install --no-cuda
+python3 -m pip install -e . -v
 ```
 
 
-To install without cupy-cuda and develop local copy
- 
+Local Installation with CUDA and cupy
+-------------------------------------
+Cupy installation requires fine tuning w.r.t. to the install version of CUDA
+For example, with CUDA 11.5,
 ```bash
-python3 setup.py develop --no-cuda 
+pip install cupy-cuda115yy
 ```
-same without cuda
+See https://docs.cupy.dev/en/stable/install.html
 
+
+After installing cupy proceed as follows
+
+With cuda (requires cupy) clone the project and run in the local folder
+```bash
+python3 -m pip install -e .[cuda] -v
+```
 CREATION OF PACKAGE in PyPi
 ---------------------------
 The package in PyPi is created by running 
