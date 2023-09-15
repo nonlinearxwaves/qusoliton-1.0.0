@@ -11,7 +11,7 @@ Being free of any licensing fees, QuSoliton is ideal for exploring classical and
 
 QuSoliton is an outcome of the European Project PhoQus (H2020 Program grant number 820392)
 
-Installation (to be implemented ...)
+Installation from repository (to be implemented ...)
 ------------------------------------
 
 ```bash
@@ -19,6 +19,13 @@ pip install qusoliton
 ```
 
 Local installation after clone from github
+------------------------------------------
+
+Clone the project and run in the local folder
+```bash
+python3 -m pip install . -v
+```
+Local installation with editing after clone from github
 ------------------------------------------
 To install for editing and debugging
 
