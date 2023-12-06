@@ -160,7 +160,7 @@ def d_xx(x, psi):
 
     """
     # evaluate the wavenumbers
-    kx, minus_kx_square = wavenumbers(x)
+    _, minus_kx_square = wavenumbers(x)
     return fft.ifft(minus_kx_square * fft.fft(psi))
 
 
@@ -831,13 +831,15 @@ def evolve_NLS(input):
     twochi1j = twochi * 1j
 
     # coordinates
-    x, dx = coordinates(input)
+    # x, dx = coordinates(input), old version
+    x, _ = coordinates(input)
 
     # initial condition
     psi0 = input["psi0"]
 
     #  wavenumbers
-    [kx, minus_kx_square] = wavenumbers(x)
+    # [kx, minus_kx_square] = wavenumbers(x)
+    _, minus_kx_square = wavenumbers(x)
 
     # longitudinal step (CHECK HERE)
     dz = (zmax / nz) / nplot
@@ -875,7 +877,7 @@ def evolve_NLS(input):
     # main loop
     psi = psi0
     for iplot in range(nplot):
-        for iz in range(nz):
+        for _ in range(nz):
             # half dispersive step
             psi = fft.ifft(fft.fft(psi) * conv)
             # full nonlinear step
